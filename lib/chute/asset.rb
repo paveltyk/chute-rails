@@ -1,7 +1,7 @@
 module Chute
   module ClassMethods
 
-    def has_one_asset(name, options = {})
+    def has_asset(name, options = {})
       has_one name.to_sym,  :class_name => "Chute::GCAsset",
                             :as => :attachable,
                             :dependent => :destroy,
@@ -10,13 +10,6 @@ module Chute
       define_method "#{name}=" do |file|
         self.send("build_#{name}", file: file)
       end
-    end
-
-    def has_many_assets(name, options = {})
-      has_many name.to_sym, :class_name => "Chute::GCAsset",
-                            :as => :attachable,
-                            :dependent => :destroy,
-                            :conditions => {:asset_type => name.to_s.singularize.camelize}
     end
 
   end

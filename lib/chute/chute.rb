@@ -1,14 +1,14 @@
 module Chute
   module ClassMethods
 
-    def has_one_chute(name, options = {})
+    def has_chute(name, options = {})
       has_one name.to_sym,  :class_name => "Chute::GCChute",
                             :as => :attachable,
                             :dependent => :destroy,
                             :conditions => {:chute_type => name.to_s.singularize.camelize}
     end
 
-    def has_many_chutes(name, options = {})
+    def has_chute_collection(name, options = {})
       has_many name.to_sym, :class_name => "Chute::GCChute",
                             :as => :attachable,
                             :dependent => :destroy,
