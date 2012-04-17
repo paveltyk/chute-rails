@@ -6,7 +6,6 @@ module Chute
     attr_accessor :meta
     attr_accessor :pagination
     attr_accessor :parent
-    attr_accessor :s3_options
     attr_accessor :errors
 
     class << self
@@ -26,7 +25,6 @@ module Chute
             object.meta       = ChuteObject.parse(data.parsed_response['meta'])       unless data.parsed_response['meta'].blank?
             object.pagination = ChuteObject.parse(data.parsed_response['pagination']) unless data.parsed_response['pagination'].blank?
             object.parent     = ChuteObject.parse(data.parsed_response['parent'])     unless data.parsed_response['parent'].blank?
-            object.s3_options = ChuteObject.parse(data.parsed_response)               if data.parsed_response['signature'].present?
           end
         else
           object.errors = data.parsed_response['errors']
