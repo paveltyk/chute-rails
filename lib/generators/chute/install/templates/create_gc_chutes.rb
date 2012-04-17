@@ -3,6 +3,7 @@ class CreateGcChutes < ActiveRecord::Migration
     create_table :gc_chutes do |t|
       # chute info
       t.integer :id
+      t.integer :remote_id
       t.string  :name
       t.string  :shortcut
       t.string  :url

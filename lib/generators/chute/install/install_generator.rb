@@ -21,6 +21,10 @@ module Chute
         migration_template "create_gc_assets.rb", "db/migrate/create_gc_assets.rb"
         migration_template "create_gc_chutes.rb", "db/migrate/create_gc_chutes.rb"
       end
+
+      def copy_chute_initializer
+        template "initializer.rb", "config/initializers/chute.rb"
+      end
     end
   end
 end

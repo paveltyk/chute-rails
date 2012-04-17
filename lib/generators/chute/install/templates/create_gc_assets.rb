@@ -3,9 +3,8 @@ class CreateGcAssets < ActiveRecord::Migration
     create_table :gc_assets do |t|
       # asset info
       t.integer :id
+      t.integer :remote_id
       t.string  :url
-      t.string  :source_url
-      t.string  :share_url
       t.boolean :is_portrait
       t.boolean :is_published
 
