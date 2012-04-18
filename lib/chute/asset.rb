@@ -5,7 +5,8 @@ module Chute
                             :as => :attachable,
                             :dependent => :destroy,
                             :conditions => {:asset_type => name.to_s.singularize.camelize}
-      accepts_nested_attributes_for name.to_sym
+
+      accepts_nested_attributes_for name.to_sym, :allow_destroy => true
     end
   end
 
@@ -22,14 +23,16 @@ module Chute
     private
 
     def upload_asset
-      file_details = details_for(file)
-      chute        = '3t0Txolm'
+      Chute.as_chute_user(self.attachable) do
+        file_details = details_for(file)
+        chute        = 1
 
-      parcel = Parcels.create({files: JSON.unparse([file_details]), chutes: JSON.unparse([chute])})
-      token  = Uploads.generate_token(parcel.first.asset_id)
-      S3Upload.new(token).upload
-      asset  = Uploads.complete(parcel.first.asset_id)
-      set_attributes(asset)
+        parcel = Parcels.create({files: JSON.unparse([file_details]), chutes: JSON.unparse([chute])})
+        token  = Uploads.generate_token(parcel.first.asset_id)
+        S3Upload.new(token).upload
+        asset  = Uploads.complete(parcel.first.asset_id)
+        set_attributes(asset)
+      end
     end
 
     def details_for(file)
@@ -39,7 +42,7 @@ module Chute
     end
 
     def set_attributes(asset)
-      %w{url source_url is_portrait is_published}.each do |attribute|
+      %w{url is_portrait is_published}.each do |attribute|
         send("#{attribute}=", asset.send(attribute))
       end
       self.remote_id = asset.id

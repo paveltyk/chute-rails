@@ -5,7 +5,8 @@ module Chute
                             :as => :attachable,
                             :dependent => :destroy,
                             :conditions => {:chute_type => name.to_s.singularize.camelize}
-      accepts_nested_attributes_for name.to_sym
+
+      accepts_nested_attributes_for name.to_sym, :allow_destroy => true
     end
 
     def has_chute_collection(name, options = {})
@@ -13,7 +14,8 @@ module Chute
                             :as => :attachable,
                             :dependent => :destroy,
                             :conditions => {:chute_type => name.to_s.singularize.camelize}
-      accepts_nested_attributes_for name.to_sym
+
+      accepts_nested_attributes_for name.to_sym, :allow_destroy => true
     end
   end
 
@@ -28,8 +30,10 @@ module Chute
     private
 
     def create_chute
-      chute = Chutes.create({chute: {name: name}})
-      set_attributes(chute)
+      Chute.as_chute_user(self.attachable) do
+        chute = Chutes.create({chute: {name: name}})
+        set_attributes(chute)
+      end
     end
 
     def set_attributes(chute)

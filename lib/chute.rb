@@ -5,21 +5,26 @@ require 'chute/s3_upload'
 require 'chute/parcel'
 require 'chute/asset'
 require 'chute/chute'
-require 'chute/railtie'
+require 'chute/user'
 
 module Chute
   mattr_accessor :app_id
   mattr_accessor :authorization
   mattr_accessor :api_endpoint
+  mattr_accessor :user_model
 
   class << self
     def configure
       yield self
+      Chute.user_model.send(:include, Chute::UserCreation) if Chute.user_model
     end
 
-    def as_chute_entity(entity)
-      return 'not implemented'
-      Thread.current['chute_authorization'] = Chute::GCEntity.find_entity(entity).auth_token
+    def is_user_owned?(owner)
+      Chute.user_model.respond_to?(:name) && owner.class.name == Chute.user_model.name
+    end
+
+    def as_chute_user(user)
+      Thread.current['chute_authorization'] = Chute::GCUser.find_by_user_id(user.id).chute_access_token if is_user_owned?(user)
       data = nil
 
       if block_given?
@@ -29,7 +34,6 @@ module Chute
 
       data
     end
-    alias_method :as_chute_user, :as_chute_entity
 
     def _authorization
       "OAuth " + (Thread.current['chute_authorization'].blank? ? Chute.authorization : Thread.current['chute_authorization'])
@@ -44,3 +48,4 @@ end
 require 'chute/request'
 require 'chute/connection'
 require 'chute/response'
+require 'chute/railtie'
