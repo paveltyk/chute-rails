@@ -2,15 +2,13 @@
         [ wip ]
 
 ## Installation
-1. `git clone git@github.com:chute/chute-ruby.git`
-2. `cd chute-ruby`
-3. `git checkout -b upgrade origin/upgrade`
-4. Add `gem 'chute', :path => 'GEM_DIR'` to Gemfile
-5. `bundle install`
-6. `rails generate chute:install`
-7. `rake db:migrate`
-8. Edit `config/initializers/chute.rb` with API credentials.
-9. Start rails server
+1. `git clone git@github.com:chute/chute-rails.git`
+2. Add `gem 'chute', :path => 'GEM_DIR'` to Gemfile
+3. `bundle install`
+4. `rails generate chute:install`
+5. `rake db:migrate`
+6. Edit `config/initializers/chute.rb` with API credentials.
+7. Start `rails server`
 
 ## Usage
 ### This gem provides the following association methods on your ActiveRecord models
