@@ -1,11 +1,11 @@
 module Chute
   module ClassMethods
-
     def has_chute(name, options = {})
       has_one name.to_sym,  :class_name => "Chute::GCChute",
                             :as => :attachable,
                             :dependent => :destroy,
                             :conditions => {:chute_type => name.to_s.singularize.camelize}
+      accepts_nested_attributes_for name.to_sym
     end
 
     def has_chute_collection(name, options = {})
@@ -13,8 +13,8 @@ module Chute
                             :as => :attachable,
                             :dependent => :destroy,
                             :conditions => {:chute_type => name.to_s.singularize.camelize}
+      accepts_nested_attributes_for name.to_sym
     end
-
   end
 
   class GCChute < ActiveRecord::Base
@@ -24,14 +24,6 @@ module Chute
     validates :name, :presence => { :message => "Name is required." }
 
     before_create :create_chute
-
-    def initialize(attributes = {})
-      super(attributes)
-    end
-
-    def save(validation = true)
-      super(validation)
-    end
 
     private
 

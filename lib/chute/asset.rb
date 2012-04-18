@@ -1,17 +1,12 @@
 module Chute
   module ClassMethods
-
     def has_asset(name, options = {})
       has_one name.to_sym,  :class_name => "Chute::GCAsset",
                             :as => :attachable,
                             :dependent => :destroy,
                             :conditions => {:asset_type => name.to_s.singularize.camelize}
-
-      define_method "#{name}=" do |file|
-        self.send("build_#{name}", file: file)
-      end
+      accepts_nested_attributes_for name.to_sym
     end
-
   end
 
   class GCAsset < ActiveRecord::Base
@@ -24,24 +19,16 @@ module Chute
 
     before_create :upload_asset
 
-    def initialize(attributes = {})
-      super(attributes)
-    end
-
-    def save(validation = true)
-      super(validation)
-    end
-
     private
 
     def upload_asset
       file_details = details_for(file)
-      chute = '3t0Txolm'
+      chute        = '3t0Txolm'
 
       parcel = Parcels.create({files: JSON.unparse([file_details]), chutes: JSON.unparse([chute])})
       token  = Uploads.generate_token(parcel.first.asset_id)
       S3Upload.new(token).upload
-      asset = Uploads.complete(parcel.first.asset_id)
+      asset  = Uploads.complete(parcel.first.asset_id)
       set_attributes(asset)
     end
 

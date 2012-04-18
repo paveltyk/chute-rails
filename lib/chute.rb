@@ -8,8 +8,16 @@ require 'chute/chute'
 require 'chute/railtie'
 
 module Chute
-  module ClassMethods
-    def as_chute_user(entity)
+  mattr_accessor :app_id
+  mattr_accessor :authorization
+  mattr_accessor :api_endpoint
+
+  class << self
+    def configure
+      yield self
+    end
+
+    def as_chute_entity(entity)
       return 'not implemented'
       Thread.current['chute_authorization'] = Chute::GCEntity.find_entity(entity).auth_token
       data = nil
@@ -21,16 +29,7 @@ module Chute
 
       data
     end
-  end
-
-  mattr_accessor :app_id
-  mattr_accessor :authorization
-  mattr_accessor :api_endpoint
-
-  class << self
-    def configure
-      yield self
-    end
+    alias_method :as_chute_user, :as_chute_entity
 
     def _authorization
       "OAuth " + (Thread.current['chute_authorization'].blank? ? Chute.authorization : Thread.current['chute_authorization'])
