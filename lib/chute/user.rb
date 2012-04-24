@@ -7,7 +7,12 @@ module Chute
     end
 
     def ensure_chute_user
-      Chute::GCUser.create(user: self)
+      Chute::GCUser.create(user: self) unless has_chute_account?
+    end
+
+    private
+    def has_chute_account?
+      Chute::GCUser.where(user_id: self.id).count != 0
     end
   end
 

@@ -19,12 +19,15 @@ module Chute
       Chute.user_model.send(:include, Chute::UserCreation) if Chute.user_model
     end
 
-    def is_user_owned?(owner)
-      Chute.user_model.respond_to?(:name) && owner.class.name == Chute.user_model.name
+    def is_user_model?(owner)
+      Chute.user_model.respond_to?(:name) && Chute.user_model.name == owner.class.name
     end
 
-    def as_chute_user(user)
-      Thread.current['chute_authorization'] = Chute::GCUser.find_by_user_id(user.id).chute_access_token if is_user_owned?(user)
+    def as_chute_user(owner)
+      if is_user_model?(owner)
+        chute_user = Chute::GCUser.find_by_user_id(owner.id) || Chute::GCUser.create(user: owner)
+        Thread.current['chute_authorization'] = chute_user.chute_access_token
+      end
       data = nil
 
       if block_given?

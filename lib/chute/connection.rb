@@ -26,6 +26,7 @@ module Chute
           if Rails.env.development?
             Rails.logger.info "----------------------------------------"
             Rails.logger.info y "Request url: #{request_url}"
+            Rails.logger.info y "Request body: #{body}"
             Rails.logger.info y response.parsed_response
             Rails.logger.info "----------------------------------------"
           end

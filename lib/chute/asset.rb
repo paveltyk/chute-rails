@@ -14,18 +14,26 @@ module Chute
     belongs_to :attachable, :polymorphic => true
     validates :asset_type, :presence => { :message => "This is a superclass." }
 
-    validates :file, :presence => { :message => "No file specified for asset." }
+    validates :file, :presence => { :message => "No file specified for asset." }, :on => :create
 
     attr_accessor :file
 
     before_create :upload_asset
 
+    def is_chute_model?
+      true
+    end
+
+    def owner
+     (self.attachable.respond_to?(:is_chute_model?) && self.attachable.is_chute_model?) ? self.attachable.owner : self.attachable
+    end
+
     private
 
     def upload_asset
-      Chute.as_chute_user(self.attachable) do
+      Chute.as_chute_user(self.owner) do
         file_details = details_for(file)
-        chute        = 1
+        chute        = chute_id_for_upload
 
         parcel = Parcels.create({files: JSON.unparse([file_details]), chutes: JSON.unparse([chute])})
         token  = Uploads.generate_token(parcel.first.asset_id)
@@ -39,6 +47,10 @@ module Chute
       { filename: file.tempfile.path,
         md5:      file.tempfile.size,
         size:     file.tempfile.size }
+    end
+
+    def chute_id_for_upload
+      self.attachable.is_a?(Chute::GCChute) ? self.attachable.remote_id : 1
     end
 
     def set_attributes(asset)

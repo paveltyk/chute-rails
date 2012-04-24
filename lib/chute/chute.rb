@@ -4,7 +4,7 @@ module Chute
       has_one name.to_sym,  :class_name => "Chute::GCChute",
                             :as => :attachable,
                             :dependent => :destroy,
-                            :conditions => {:chute_type => name.to_s.singularize.camelize}
+                            :conditions => {:chute_type => name.to_s.singularize.camelize, :name => name.to_s}
 
       accepts_nested_attributes_for name.to_sym, :allow_destroy => true
     end
@@ -27,10 +27,25 @@ module Chute
 
     before_create :create_chute
 
+    has_many :assets, :class_name => "Chute::GCAsset",
+                      :as => :attachable,
+                      :dependent => :destroy,
+                      :conditions => {:asset_type => 'GCChuteAsset'}
+
+    accepts_nested_attributes_for :assets, :allow_destroy => true
+
+    def is_chute_model?
+      true
+    end
+
+    def owner
+      (self.attachable.respond_to?(:is_chute_model?) && self.attachable.is_chute_model?) ? self.attachable.owner : self.attachable
+    end
+
     private
 
     def create_chute
-      Chute.as_chute_user(self.attachable) do
+      Chute.as_chute_user(self.owner) do
         chute = Chutes.create({chute: {name: name}})
         set_attributes(chute)
       end
