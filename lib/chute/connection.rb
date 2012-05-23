@@ -39,6 +39,7 @@ module Chute
 
         rescue MultiJson::DecodeError
           p 'Internal Server Error'
+          raise ChuteApiAuthException.new(response.body) if response.body.to_s =~ /access token/i
           raise ChuteApiInternalException.new('Chute API Exception')
           Response.with_code_and_error(500, 'Internal Server Error')
 
@@ -56,4 +57,5 @@ module Chute
 
   class ChuteApiUnavailableException < Exception ; end
   class ChuteApiInternalException < Exception ; end
+  class ChuteApiAuthException < Exception ; end
 end
