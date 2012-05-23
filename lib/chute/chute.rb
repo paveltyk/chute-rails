@@ -46,7 +46,7 @@ module Chute
 
     def create_chute
       Chute.as_chute_user(self.owner) do
-        chute = Chutes.create({chute: {name: name}})
+        chute = Chutes.create({name: name})
         set_attributes(chute)
       end
     end
